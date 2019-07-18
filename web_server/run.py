@@ -3,6 +3,7 @@
 import os
 import signal
 
+import lockfile
 from wsgiserver import WSGIServer
 
 from web_server.api import SERVER
@@ -18,7 +19,7 @@ def main(action, debug):
 
     CONFIGURATION.DEBUG = debug
     if action == "start":
-        with daemon.DaemonContext(pidfile=PID_FILE, detach_process=True):
+        with daemon.DaemonContext(pidfile=lockfile.FileLock(PID_FILE), detach_process=True):
             init_db()
             WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT)))
     else:
