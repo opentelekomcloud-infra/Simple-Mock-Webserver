@@ -19,9 +19,9 @@ def main(action, debug):
 
     CONFIGURATION.DEBUG = debug
     if action == "start":
+        init_db()
         with daemon.DaemonContext(pidfile=PIDLockFile(PID_FILE), detach_process=True):
-            init_db()
-            WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT)))
+            WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT))).start()
     else:
         with open(PID_FILE) as pid_file:
             pid = int(pid_file.read())
