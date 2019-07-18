@@ -5,6 +5,5 @@ python:
 install:
   - pip install poetry
   - poetry install
-  - python -c 'open("/run/tmp.file", "w+").close()'
   - ls -l /run
 script: poetry run pytest tests
