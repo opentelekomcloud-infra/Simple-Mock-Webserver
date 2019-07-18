@@ -1,18 +1,36 @@
 from flask import Flask
-from flask_restful import Api, Resource
+from flask_restful import Api, Resource, reqparse
 
 from .database import create_entity, get_all_enities, get_entity_data
 
-SERVER = Flask("mock_server")
+SERVER = Flask("API")
 API = Api(SERVER)
+
+
+@SERVER.route("/")
+def is_up():
+    return "OK"
 
 
 class MockEntity(Resource):
     """Mock for resource"""
 
-    def get(self, entity_id):
+    def __init__(self):
+        self._body_parser = reqparse.RequestParser()
+        self._body_parser.add_argument("data")
+
+    def get(self, uuid):
         """Return some entity"""
-        return get_entity_data(entity_id)
+        return get_entity_data(uuid)
+
+    def post(self):
+        """Create new entity"""
+        data = self._body_parser.parse_args()
+        new_id = create_entity(data)
+        return {}, 201, {"Location": f"/entity/{new_id}"}
+
+
+API.add_resource(MockEntity, "/entity/<uuid:uuid>", "/entity")
 
 
 class MockEntityList(Resource):
@@ -22,10 +40,5 @@ class MockEntityList(Resource):
         """Get list of all entities"""
         return get_all_enities()
 
-    def post(self, data):
-        """Create new entity"""
-        return create_entity(data)
 
-
-API.add_resource(MockEntity, "/entity/<uuid:uuid>")
 API.add_resource(MockEntityList, "/entities")

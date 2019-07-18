@@ -1,0 +1,32 @@
+image: python:3.7
+
+stages:
+- test
+- deploy
+
+before_script:
+- pip install poetry
+- poetry config repositories.my "https://pypi.outcatcher.com/simple/"
+- poetry config http-basic.my $PYPI_USERNAME $PYPI_PASSWORD
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - .cache/pypoetry/
+  - .cache/pip/
+  - .config/pypoetry/
+
+tests:
+  stage: test
+  script:
+  - poetry install
+  - poetry run pytest tests
+
+wheel:
+  stage: deploy
+  script:
+  - poetry build -f wheel
+  - poetry build -f sdist
+  - poetry publish -r my
+  only:
+  - master

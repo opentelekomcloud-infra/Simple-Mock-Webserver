@@ -19,7 +19,7 @@ class Entity(BaseModel):
     data = TextField()
 
 
-def _init_db():
+def init_db():
     if CONFIGURATION.DEBUG:
         database = SqliteDatabase("debug.db")
     else:
@@ -30,6 +30,8 @@ def _init_db():
                                       password=CONFIGURATION.DB_PASSWORD)
 
     DB.initialize(database)
+    if not database.table_exists(Entity.__name__):
+        database.create_tables([Entity])
 
 
 def create_entity(data: EntityStruct) -> str:

@@ -5,7 +5,8 @@ from typing import NamedTuple
 
 class CONFIGURATION:
     """Configuration container"""
-    DEBUG = False
+    DEBUG = True
+    SERVER_PORT = int(os.getenv("SERVER_PORT", 5054))
 
     DB_HOST, DB_PORT = os.getenv("PG_DB_URL", "localhost:9999").split(":")
     DB_NAME = os.getenv("PG_DATABASE", "entities")
