@@ -10,7 +10,7 @@ name = "outcatcher"
 url = "https://pypi.outcatcher.com/simple/"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6.1"
 
 peewee = "^3.9"
 flask = "^1.1"

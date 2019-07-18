@@ -22,8 +22,11 @@ def main(action, debug):
         init_db()
         with daemon.DaemonContext(pidfile=PIDLockFile(PID_FILE), detach_process=True):
             if not os.path.exists(PID_FILE):
+                print("NO PID FILE EXISTS")
                 with open(PID_FILE, "w+") as pid:
                     pid.write(str(os.getpid()))
+            else:
+                print("PID FILE EXISTS")
             WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT))).start()
     else:
         with open(PID_FILE) as pid_file:

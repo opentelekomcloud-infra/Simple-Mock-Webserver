@@ -1,10 +1,11 @@
 dist: xenial
 language: python
 python:
-  - "3.6"
   - "3.7"
-  - "3.8-dev"
 install:
   - pip install poetry
   - poetry install
+  - chmod 777 /run
+  - ls -l /
+  - ls -l /run
 script: poetry run pytest tests
