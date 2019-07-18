@@ -10,7 +10,7 @@ from web_server.api import SERVER
 from web_server.configuration import CONFIGURATION
 from web_server.database import init_db
 
-PID_FILE = "/tmp/mockserver.pid"
+PID_FILE = os.path.abspath("/run/web-server.pid")
 
 
 def main(action, debug):
