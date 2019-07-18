@@ -36,10 +36,10 @@ def entity(random_data):
 @pytest.fixture(scope="session")
 def session() -> BaseUrlSession:
     port = CONFIGURATION.SERVER_PORT
+    CONFIGURATION.DEBUG = True
     init_db()
     Thread(target=WSGIServer(SERVER, port=port).start, daemon=True).start()
     session = BaseUrlSession(f"http://localhost:{port}")
-    session.trust_env = False
     end_time = time.monotonic() + 10
 
     def _not_up():
