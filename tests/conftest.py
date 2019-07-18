@@ -41,7 +41,15 @@ def session() -> BaseUrlSession:
     session = BaseUrlSession(f"http://localhost:{port}")
     session.trust_env = False
     end_time = time.monotonic() + 10
-    while session.get("").status_code != 200:  # wait until server is up and running
+
+    def _not_up():
+        """Returns True if server is down"""
+        try:
+            return session.get("").status_code != 200
+        except ConnectionError:
+            return True
+
+    while _not_up():  # wait until server is up and running
         time.sleep(0.1)
         if time.monotonic() > end_time:
             raise RuntimeError
