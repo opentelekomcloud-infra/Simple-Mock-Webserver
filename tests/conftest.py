@@ -5,6 +5,7 @@ import time
 from threading import Thread
 
 import pytest
+import requests
 from ocomone.session import BaseUrlSession
 from wsgiserver import WSGIServer
 
@@ -46,7 +47,7 @@ def session() -> BaseUrlSession:
         """Returns True if server is down"""
         try:
             return session.get("").status_code != 200
-        except ConnectionError:
+        except requests.ConnectionError:
             return True
 
     while _not_up():  # wait until server is up and running
