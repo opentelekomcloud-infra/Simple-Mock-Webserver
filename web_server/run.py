@@ -3,13 +3,27 @@
 import os
 import signal
 
+from lockfile.pidlockfile import PIDLockFile
 from wsgiserver import WSGIServer
 
 from web_server.api import SERVER
 from web_server.configuration import CONFIGURATION
 from web_server.database import init_db
 
-PID_FILE = "/tmp/mockserver.pid"
+
+def _pid_dir_permissions():
+    default = "/run"
+    file_name = f"{default}/randomfilename"
+    try:
+        open(file_name, "w+").close()
+        os.remove(file_name)
+        return True
+    except IOError:
+        return False
+
+
+PID_DIR = os.path.abspath("/run" if _pid_dir_permissions() else os.path.abspath("."))
+PID_FILE = os.path.abspath(f"{PID_DIR}/web-server.pid")
 
 
 def main(action, debug):
@@ -18,9 +32,9 @@ def main(action, debug):
 
     CONFIGURATION.DEBUG = debug
     if action == "start":
-        with daemon.DaemonContext(pidfile=PID_FILE, detach_process=True):
-            init_db()
-            WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT)))
+        init_db()
+        with daemon.DaemonContext(pidfile=PIDLockFile(PID_FILE), detach_process=True):
+            WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", CONFIGURATION.SERVER_PORT))).start()
     else:
         with open(PID_FILE) as pid_file:
             pid = int(pid_file.read())

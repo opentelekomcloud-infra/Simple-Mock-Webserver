@@ -1,0 +1,9 @@
+dist: bionic
+language: python
+python:
+  - "3.7"
+install:
+  - pip install poetry
+  - poetry install
+  - ls -l /run
+script: poetry run pytest tests
