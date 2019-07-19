@@ -9,13 +9,6 @@ before_script:
 - poetry config repositories.my "https://pypi.outcatcher.com/simple/"
 - poetry config http-basic.my $PYPI_USERNAME $PYPI_PASSWORD
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-  - .cache/pypoetry/
-  - .cache/pip/
-  - .config/pypoetry/
-
 tests:
   stage: test
   script:
