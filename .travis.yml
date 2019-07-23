@@ -8,6 +8,7 @@ install:
   - ls -l /run
 script:
   - poetry run pytest tests
+before_deploy:
   - poetry build -f wheel
 deploy:
   provider: script
