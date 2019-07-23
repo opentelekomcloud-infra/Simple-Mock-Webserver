@@ -9,8 +9,8 @@ import requests
 from ocomone import BaseUrlSession
 from pytest import skip
 
-from web_server.configuration import CONFIGURATION
-from web_server.run import PID_FILE, main
+from too_simple_server.configuration import CONFIGURATION
+from too_simple_server.run import PID_FILE, main
 
 skip_on_win = pytest.mark.skipif(os.name != "posix", reason="Running on windows")
 

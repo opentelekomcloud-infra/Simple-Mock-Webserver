@@ -1,13 +1,9 @@
 [tool.poetry]
-name = "web_server"
+name = "too-simple-server"
 version = "0.1.0"
-description = "Simple web server stub for testing purposes"
+description = "Simple web server stub for testing purposes (with a lot of dependencies)"
 authors = ["Anton Kachurin <anton.kachurin@t-systems.com>"]
 license = "Apache-2.0"
-
-[[tool.poetry.source]]
-name = "outcatcher"
-url = "https://pypi.outcatcher.com/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
