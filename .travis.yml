@@ -10,6 +10,7 @@ script:
   - poetry run pytest tests
 before_deploy:
   - poetry build -f wheel
+  - poetry config http-basic.pypi $PYPI_USERNAME $PYPI_PASSWORD
 deploy:
   provider: script
   skip_cleanup: true
