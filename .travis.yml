@@ -10,7 +10,8 @@ script:
   - poetry run pytest tests
   - poetry build -f wheel
 deploy:
-  provider: pypi
+  provider: script
+  script: poetry publish
   user: outcatcher
   password:
     secure: EZzuj8mNDUl2SaU2nAzw+1a2WUhzJigOZRgZblxZ75EUBS5h2L+ngmSOgK0kpR1EeNV0nRWp65Fyhl9n9Lbvs1G0wFlwx2zXlfNigkkK0VXSJj7hfC3YV04S2dyeE7+624e9zPW/mRPfTHHJYqopUMU/LnTiIZJ5jfoJY/mQpINKLyCUfxz8nhgm+wRYXhwDCi5Gzy8CXWkIASWk9Sv8G6SDhlAIYddJu6o/c7iY4w6UFOhOGNPRuEC8CcHMWZf46JD+4F4feA1UwI+MJXkiRD6Ouz6RfRLsnlnGRodbXA9cBWLwrXW0GYYCq0I7urU4atTnhMUNIxzcab1gLEz5aCnnH5DZbSVMttKwBcXPmWKnDYYUGPldxzkUhJwb1d1ZKjlW2ThOgar/JYSq1eS6d+0OIAcjQRhmdKVp/KXSIFfE2poYZkHH6KXDTViT+0Qs0cxH7ZcHxmXvC3v6kdcKAH6hSROu1sSlIXIsHxE2y+vzQsIWVh8ncq2/zI3xguUwTsyXHLSwEQi8kFMczrnYFiGNbu93GqwNty/HXNpdeF9iylT9q2+bByfWES8YsqTpjq+dpJ74NdGLWuPudm6rcVdgM3olE8DqUXVTXBYHBJ3Nx0EjRyhGFldKqkHpTg/m4IA9W3eNgiuQ+Igk3AGKVGVpP17IBggLzsZ2MoCrZx8=
