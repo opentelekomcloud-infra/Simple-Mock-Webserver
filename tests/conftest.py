@@ -9,9 +9,9 @@ import requests
 from ocomone.session import BaseUrlSession
 from wsgiserver import WSGIServer
 
-from web_server.api import SERVER
-from web_server.configuration import CONFIGURATION, EntityStruct
-from web_server.database import Entity, create_entity, init_db
+from too_simple_server.api import SERVER
+from too_simple_server.configuration import CONFIGURATION, EntityStruct
+from too_simple_server.database import Entity, create_entity, init_db
 
 
 def _rand_str():

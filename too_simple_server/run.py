@@ -6,9 +6,9 @@ import signal
 from lockfile.pidlockfile import PIDLockFile
 from wsgiserver import WSGIServer
 
-from web_server.api import SERVER
-from web_server.configuration import CONFIGURATION
-from web_server.database import init_db
+from too_simple_server.api import SERVER
+from too_simple_server.configuration import CONFIGURATION
+from too_simple_server.database import init_db
 
 
 def _pid_dir_permissions():

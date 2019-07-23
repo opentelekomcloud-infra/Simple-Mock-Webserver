@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
 
-from web_server.configuration import CONFIGURATION, EntityStruct
+from too_simple_server.configuration import CONFIGURATION, EntityStruct
 
 DB = DatabaseProxy()
 
