@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "too-simple-server"
-version = "0.1.0"
+version = "0.2.1"
 description = "Simple web server stub for testing purposes (with a lot of dependencies)"
 authors = ["Anton Kachurin <anton.kachurin@t-systems.com>"]
 license = "Apache-2.0"
@@ -13,15 +13,19 @@ peewee = "^3.9"
 flask = "^1.1"
 flask-restful = "^0.3.7"
 wsgiserver = "^1.3"
-psycopg2 = "^2.8"
+psycopg2-binary = "^2.8"
 python-daemon = "^2.2"
 requests = "^2.22"
 lockfile = "^0.12.2"
+pyyaml = "^5.1"
+dataclasses = {version = "^0.6.0", python = "~3.6"}
+docutils = "=0.14"
+ocomone = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.0"
 pytest-cov = "^2.7"
-ocomone = "^0.1.6"
+requests = "^2.22"
 
 [build-system]
 requires = ["poetry>=0.12"]

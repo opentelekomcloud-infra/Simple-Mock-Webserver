@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
 
-from too_simple_server.configuration import CONFIGURATION, EntityStruct
+from .configuration import EntityStruct, load_configuration
 
 DB = DatabaseProxy()
 
@@ -20,14 +20,16 @@ class Entity(BaseModel):
 
 
 def init_db():
-    if CONFIGURATION.DEBUG:
+    configuration = load_configuration()
+    if configuration.debug:
         database = SqliteDatabase("debug.db")
     else:
-        database = PostgresqlDatabase(CONFIGURATION.DB_NAME,
-                                      host=CONFIGURATION.DB_HOST,
-                                      port=CONFIGURATION.DB_PORT,
-                                      username=CONFIGURATION.DB_USERNAME,
-                                      password=CONFIGURATION.DB_PASSWORD)
+        host, port = configuration.pg_bd_url.split(":")
+        database = PostgresqlDatabase(configuration.pg_database,
+                                      host=host,
+                                      port=port,
+                                      username=configuration.pg_username,
+                                      password=configuration.pg_password)
 
     DB.initialize(database)
     if not database.table_exists(Entity.__name__):

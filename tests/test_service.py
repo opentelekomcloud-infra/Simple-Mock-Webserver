@@ -6,10 +6,9 @@ import time
 
 import pytest
 import requests
-from ocomone import BaseUrlSession
-from pytest import skip
+from ocomone.session import BaseUrlSession
 
-from too_simple_server.configuration import CONFIGURATION
+from too_simple_server.configuration import load_configuration
 from too_simple_server.run import PID_FILE, main
 
 skip_on_win = pytest.mark.skipif(os.name != "posix", reason="Running on windows")
@@ -18,7 +17,8 @@ MODULE_NAME = "web_server"
 
 
 def _wait_for_server(status_code, message, error_is_ok=False):
-    session = BaseUrlSession(f"http://localhost:{CONFIGURATION.SERVER_PORT}")
+    configuration = load_configuration()
+    session = BaseUrlSession(f"http://localhost:{configuration.server_port}")
     session.trust_env = False
     end_time = time.monotonic() + 10
 
