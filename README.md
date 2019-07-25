@@ -1,6 +1,6 @@
 ### Simple Mock Server
 
-[![Build Status](https://travis-ci.com/outcatcher/Simple-Mock-Webserver.svg?branch=master)](https://travis-ci.com/outcatcher/Simple-Mock-Webserver)
+[![Build Status](https://travis-ci.com/opentelekomcloud-infra/Simple-Mock-Webserver.svg?branch=master)](https://travis-ci.com/outcatcher/Simple-Mock-Webserver)
 
 This is single-purpose web server having 2 endpoints:
 
