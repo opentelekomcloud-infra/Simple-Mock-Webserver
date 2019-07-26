@@ -11,19 +11,21 @@ from .configuration import load_configuration
 from .database import init_db
 
 
-def _pid_dir_permissions():
-    default = "/run"
+def _pid_dir():
+    default = "/tmp/too-simple"
+    fallback = "~/.too-simple"
+    os.makedirs(default, exist_ok=True)
     file_name = f"{default}/randomfilename"
     try:
         open(file_name, "w+").close()
         os.remove(file_name)
-        return True
+        return default
     except IOError:
-        return False
+        os.makedirs(fallback, exist_ok=True)
+        return os.path.abspath(fallback)
 
 
-PID_DIR = os.path.abspath("/run" if _pid_dir_permissions() else os.path.abspath("."))
-PID_FILE = os.path.abspath(f"{PID_DIR}/web-server.pid")
+PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
 
 
 def main(action, debug=None):
@@ -42,7 +44,7 @@ def main(action, debug=None):
     def _start():
         init_db()
         with daemon.DaemonContext(pidfile=PIDLockFile(PID_FILE), detach_process=True):
-            WSGIServer(SERVER, port=int(os.getenv("SERVER_PORT", configuration.server_port))).start()
+            WSGIServer(SERVER, port=configuration.server_port).start()
 
     if action == "start":
         _start()
