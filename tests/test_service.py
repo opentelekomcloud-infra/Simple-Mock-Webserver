@@ -1,5 +1,4 @@
 """Check if working correctly as service"""
-# TBD
 import multiprocessing
 import os
 import time
@@ -44,15 +43,13 @@ def _wait(condition, *args, timeout=5, error: Any = AssertionError):
 
 
 @skip_on_win
-class TestService:
-
-    def test_service_lifecycle(self):
-        """Test server start/stop"""
-        process = multiprocessing.Process(target=main, args=("start", True), daemon=True)
-        process.start()
-        _wait_for_server(True)
-        _wait(os.path.exists, PID_FILE)
-        process.terminate()
-        main("stop")
-        _wait_for_server(False)
-        _wait(lambda p: not os.path.exists(p), PID_FILE)
+def test_service_lifecycle():
+    """Test server start/stop"""
+    process = multiprocessing.Process(target=main, args=("start", True), daemon=True)
+    process.start()
+    _wait_for_server(True)
+    _wait(os.path.exists, PID_FILE)
+    process.terminate()
+    main("stop")
+    _wait_for_server(False)
+    _wait(lambda p: not os.path.exists(p), PID_FILE)

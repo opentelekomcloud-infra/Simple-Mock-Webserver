@@ -24,7 +24,7 @@ def init_db():
     if configuration.debug:
         database = SqliteDatabase("debug.db")
     else:
-        host, port = configuration.pg_bd_url.split(":")
+        host, port = configuration.pg_db_url.split(":")
         database = PostgresqlDatabase(configuration.pg_database,
                                       host=host,
                                       port=port,
