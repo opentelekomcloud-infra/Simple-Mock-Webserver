@@ -13,7 +13,7 @@ from .database import init_db
 
 def _pid_dir():
     default = "/tmp/too-simple"
-    fallback = "~/.too-simple"
+    fallback = os.path.abspath("~/.too-simple")
     os.makedirs(default, exist_ok=True)
     file_name = f"{default}/randomfilename"
     try:
@@ -22,7 +22,7 @@ def _pid_dir():
         return default
     except IOError:
         os.makedirs(fallback, exist_ok=True)
-        return os.path.abspath(fallback)
+        return fallback
 
 
 PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
