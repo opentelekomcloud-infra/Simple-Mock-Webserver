@@ -4,7 +4,7 @@ import os
 from typing import NamedTuple, Optional
 
 import yaml
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from ocomone.logging import setup_logger
 
 DEFAULT_CFG_PATH = "/etc/too-simple/config.yml"
@@ -28,8 +28,8 @@ class Configuration:
     pg_password: Optional[str] = None
 
     def to_dict(self):
-        result = self.__dict__.copy()
-        return result
+        """Return fields dict for instance"""
+        return asdict(self)
 
 
 DEFAULTS = Configuration()
