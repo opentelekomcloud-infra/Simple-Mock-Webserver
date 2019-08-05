@@ -6,7 +6,6 @@ python:
 install:
   - pip install poetry
   - poetry install
-  - ls -l /run
 script:
   - poetry run pytest tests
 before_deploy:
