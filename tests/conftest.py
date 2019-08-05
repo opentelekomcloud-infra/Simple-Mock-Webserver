@@ -2,7 +2,7 @@
 import random
 import string
 import time
-from threading import Thread
+from multiprocessing import Process
 
 import pytest
 import requests
@@ -10,7 +10,7 @@ from ocomone.session import BaseUrlSession
 from wsgiserver import WSGIServer
 
 from too_simple_server.api import SERVER
-from too_simple_server.configuration import CONFIGURATION, EntityStruct
+from too_simple_server.configuration import EntityStruct, load_configuration
 from too_simple_server.database import Entity, create_entity, init_db
 
 
@@ -34,12 +34,14 @@ def entity(random_data):
     delete_entity(uuid)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def session() -> BaseUrlSession:
-    port = CONFIGURATION.SERVER_PORT
-    CONFIGURATION.DEBUG = True
+    """Start server and create new base URL session"""
+
+    port = load_configuration().server_port
     init_db()
-    Thread(target=WSGIServer(SERVER, port=port).start, daemon=True).start()
+    srv = Process(target=WSGIServer(SERVER, port=port).start, daemon=True)
+    srv.start()
     session = BaseUrlSession(f"http://localhost:{port}")
     end_time = time.monotonic() + 10
 
@@ -56,3 +58,4 @@ def session() -> BaseUrlSession:
             raise RuntimeError
     yield session
     session.close()
+    srv.terminate()

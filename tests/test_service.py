@@ -1,53 +1,55 @@
 """Check if working correctly as service"""
-# TBD
 import multiprocessing
 import os
 import time
+from typing import Any
 
 import pytest
 import requests
-from ocomone import BaseUrlSession
-from pytest import skip
+from ocomone.session import BaseUrlSession
 
-from too_simple_server.configuration import CONFIGURATION
+from too_simple_server.configuration import load_configuration
 from too_simple_server.run import PID_FILE, main
 
 skip_on_win = pytest.mark.skipif(os.name != "posix", reason="Running on windows")
 
-MODULE_NAME = "web_server"
+configuration = load_configuration()
 
 
-def _wait_for_server(status_code, message, error_is_ok=False):
-    session = BaseUrlSession(f"http://localhost:{CONFIGURATION.SERVER_PORT}")
+def _wait_for_server(ok):
+    session = BaseUrlSession(f"http://localhost:{configuration.server_port}")
     session.trust_env = False
-    end_time = time.monotonic() + 10
 
-    def _not_up():
+    def _server_expected(_ok=True):
         """Returns True if server is down"""
         try:
-            return session.get("").status_code != status_code
-        except requests.ConnectionError:
-            return not error_is_ok
+            response = session.get("/").status_code
+            print(response)
+            return (response == 200) is _ok
+        except requests.RequestException:
+            return not _ok
 
-    while _not_up():  # wait until server is up and running
+    _wait(_server_expected, ok, error=AssertionError(f"Server is not {'started' if ok else 'stopped'}"))
+    session.close()
+
+
+def _wait(condition, *args, timeout=5, error: Any = AssertionError):
+    end_time = time.monotonic() + timeout
+    while time.monotonic() < end_time:
+        if condition(*args):
+            return
         time.sleep(0.1)
-        if time.monotonic() > end_time:
-            raise AssertionError(message)
+    raise error
 
 
 @skip_on_win
-class TestService:
-
-    def test_service_start(self):
-        multiprocessing.Process(target=main, args=("start", True), daemon=True).start()
-        _wait_for_server(200, "Server is not started in 10 seconds")
-
-    @pytest.mark.skip("Not working in any CI")
-    def test_service_lifecycle(self):
-        """Test server start/stop"""
-        multiprocessing.Process(target=main, args=("start", True)).start()
-        _wait_for_server(200, "Server is not started in 10 seconds")
-        assert os.path.exists(PID_FILE)
-        multiprocessing.Process(target=main, args=("stop", True)).run()
-        _wait_for_server(-1, "Server is not stopped in 10 seconds", error_is_ok=True)
-        assert not os.path.exists(PID_FILE)
+def test_service_lifecycle():
+    """Test server start/stop"""
+    process = multiprocessing.Process(target=main, args=("start", True), daemon=True)
+    process.start()
+    _wait_for_server(True)
+    _wait(os.path.exists, PID_FILE)
+    process.terminate()
+    main("stop")
+    _wait_for_server(False)
+    _wait(lambda p: not os.path.exists(p), PID_FILE)
