@@ -28,11 +28,11 @@ def _pid_dir():
 PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
 
 
-def main(action, debug=None):
+def main(action, debug=None, configuration_path=None):
     """Start/stop running server"""
     import daemon  # *nix only
 
-    configuration = load_configuration()
+    configuration = load_configuration(configuration_path)
     if debug is not None:
         configuration.debug = debug
 
