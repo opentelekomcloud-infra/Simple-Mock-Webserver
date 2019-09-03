@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "too-simple-server"
-version = "0.2.1"
+version = "0.2.2"
 description = "Simple web server stub for testing purposes (with a lot of dependencies)"
 authors = ["Anton Kachurin <anton.kachurin@t-systems.com>"]
 license = "Apache-2.0"
