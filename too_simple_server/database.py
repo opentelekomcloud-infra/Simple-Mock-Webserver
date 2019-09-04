@@ -27,12 +27,13 @@ def init_db(configuration: Configuration):
         database = PostgresqlDatabase(configuration.pg_database,
                                       host=host,
                                       port=port,
-                                      username=configuration.pg_username,
+                                      user=configuration.pg_username,
                                       password=configuration.pg_password)
 
     DB.initialize(database)
     if not database.table_exists(Entity.__name__):
         database.create_tables([Entity])
+        database.commit()
 
 
 def create_entity(data: EntityStruct) -> str:

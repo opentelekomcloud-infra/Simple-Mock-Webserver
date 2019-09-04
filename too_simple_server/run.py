@@ -31,7 +31,7 @@ def _log_dir():
 
 
 PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
-LOG_FILE = os.path.abspath(f"{_pid_dir()}/execution.log")
+LOG_FILE = os.path.abspath(f"{_log_dir()}/execution.log")
 
 
 def main(action, debug=None, configuration_path=DEFAULT_CFG_PATH, no_wsgi=False):
