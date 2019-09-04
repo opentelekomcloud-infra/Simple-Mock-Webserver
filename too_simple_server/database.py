@@ -26,9 +26,7 @@ def _create_psql_database(db_name, user, password, host, port):
     conn = connect(dbname="postgres", user=user, password=password, host=host, port=port)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = conn.cursor()
-    cursor.execute(
-        f"select 'create database {db_name}'"
-        f"where not exists (select from pg_database where datname='{db_name}')")
+    cursor.execute(f"create database {db_name}")
     cursor.close()
     conn.close()
 
