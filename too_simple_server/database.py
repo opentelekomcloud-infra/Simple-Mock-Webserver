@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
 
-from .configuration import EntityStruct, load_configuration
+from .configuration import Configuration, EntityStruct
 
 DB = DatabaseProxy()
 
@@ -19,8 +19,7 @@ class Entity(BaseModel):
     data = TextField()
 
 
-def init_db():
-    configuration = load_configuration()
+def init_db(configuration: Configuration):
     if configuration.debug:
         database = SqliteDatabase("debug.db")
     else:
