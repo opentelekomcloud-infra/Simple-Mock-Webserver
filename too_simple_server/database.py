@@ -19,16 +19,27 @@ class Entity(BaseModel):
     data = TextField()
 
 
+def _create_psql_database(db_name, user, password, host, port):
+    database = PostgresqlDatabase("postgres", user=user, password=password, host=host, port=port)
+    cursor = database.cursor()
+    cursor.execute(
+        f"select 'create database if not exists {db_name}'"
+        f"where not exists (select from pg_database where datname='{db_name}')")
+    cursor.close()
+
+
 def init_db(configuration: Configuration):
     if configuration.debug:
         database = SqliteDatabase("debug.db")
     else:
+
         host, port = configuration.pg_db_url.split(":")
-        database = PostgresqlDatabase(configuration.pg_database,
-                                      host=host,
-                                      port=port,
-                                      user=configuration.pg_username,
-                                      password=configuration.pg_password)
+        connection_kwargs = dict(host=host,
+                                 port=port,
+                                 user=configuration.pg_username,
+                                 password=configuration.pg_password)
+        _create_psql_database(configuration.pg_database, **connection_kwargs)
+        database = PostgresqlDatabase(configuration.pg_database, **connection_kwargs)
 
     DB.initialize(database)
     if not database.table_exists(Entity.__name__):
