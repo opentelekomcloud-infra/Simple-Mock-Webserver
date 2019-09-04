@@ -28,7 +28,7 @@ def _create_psql_database(db_name, user, password, host, port):
     cursor = conn.cursor()
     cursor.execute(
         f"select 'create database {db_name}'"
-        f"where not exists (select from pg_database where datname='{db_name}')\gexec")
+        f"where not exists (select from pg_database where datname='{db_name}')")
     cursor.close()
     conn.close()
 
