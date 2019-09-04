@@ -10,7 +10,7 @@ from ocomone.session import BaseUrlSession
 from wsgiserver import WSGIServer
 
 from too_simple_server.api import SERVER
-from too_simple_server.configuration import EntityStruct, load_configuration
+from too_simple_server.configuration import DEFAULT_CFG_PATH, EntityStruct, load_configuration
 from too_simple_server.database import Entity, create_entity, init_db
 
 
@@ -37,9 +37,9 @@ def entity(random_data):
 @pytest.fixture(scope="module")
 def session() -> BaseUrlSession:
     """Start server and create new base URL session"""
-
-    port = load_configuration().server_port
-    init_db()
+    config = load_configuration(DEFAULT_CFG_PATH)
+    port = config.server_port
+    init_db(config)
     srv = Process(target=WSGIServer(SERVER, port=port).start, daemon=True)
     srv.start()
     session = BaseUrlSession(f"http://localhost:{port}")

@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
 
-from .configuration import EntityStruct, load_configuration
+from .configuration import Configuration, EntityStruct
 
 DB = DatabaseProxy()
 
@@ -19,21 +19,39 @@ class Entity(BaseModel):
     data = TextField()
 
 
-def init_db():
-    configuration = load_configuration()
+def _create_psql_database(db_name, user, password, host, port):
+    from psycopg2 import connect
+    from psycopg2.errors import DuplicateDatabase
+    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+    conn = connect(dbname="postgres", user=user, password=password, host=host, port=port)
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cursor = conn.cursor()
+    try:
+        cursor.execute(f"create database {db_name}")
+    except DuplicateDatabase:
+        pass
+    cursor.close()
+    conn.close()
+
+
+def init_db(configuration: Configuration):
     if configuration.debug:
         database = SqliteDatabase("debug.db")
     else:
+
         host, port = configuration.pg_db_url.split(":")
-        database = PostgresqlDatabase(configuration.pg_database,
-                                      host=host,
-                                      port=port,
-                                      username=configuration.pg_username,
-                                      password=configuration.pg_password)
+        connection_kwargs = dict(host=host,
+                                 port=port,
+                                 user=configuration.pg_username,
+                                 password=configuration.pg_password)
+        _create_psql_database(configuration.pg_database, **connection_kwargs)
+        database = PostgresqlDatabase(configuration.pg_database, **connection_kwargs)
 
     DB.initialize(database)
     if not database.table_exists(Entity.__name__):
         database.create_tables([Entity])
+        database.commit()
 
 
 def create_entity(data: EntityStruct) -> str:
