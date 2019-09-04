@@ -21,12 +21,16 @@ class Entity(BaseModel):
 
 def _create_psql_database(db_name, user, password, host, port):
     from psycopg2 import connect
+    from psycopg2.errors import DuplicateDatabase
     from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
     conn = connect(dbname="postgres", user=user, password=password, host=host, port=port)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = conn.cursor()
-    cursor.execute(f"create database {db_name}")
+    try:
+        cursor.execute(f"create database {db_name}")
+    except DuplicateDatabase:
+        pass
     cursor.close()
     conn.close()
 
