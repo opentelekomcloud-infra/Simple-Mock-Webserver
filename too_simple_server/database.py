@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from .configuration import Configuration, EntityStruct
 
@@ -21,11 +22,14 @@ class Entity(BaseModel):
 
 def _create_psql_database(db_name, user, password, host, port):
     database = PostgresqlDatabase("postgres", user=user, password=password, host=host, port=port)
-    cursor = database.cursor()
+    conn = database.connection()
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cursor = conn.cursor()
     cursor.execute(
         f"select 'create database if not exists {db_name}'"
         f"where not exists (select from pg_database where datname='{db_name}')")
     cursor.close()
+    conn.close()
 
 
 def init_db(configuration: Configuration):
