@@ -7,7 +7,7 @@ from lockfile.pidlockfile import PIDLockFile
 from wsgiserver import WSGIServer
 
 from .api import SERVER
-from .configuration import load_configuration
+from .configuration import DEFAULT_CFG_PATH, load_configuration
 from .database import init_db
 
 
@@ -28,7 +28,7 @@ def _pid_dir():
 PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
 
 
-def main(action, debug=None, configuration_path=None):
+def main(action, debug=None, configuration_path=DEFAULT_CFG_PATH):
     """Start/stop running server"""
     import daemon  # *nix only
 
@@ -42,7 +42,7 @@ def main(action, debug=None, configuration_path=None):
         os.kill(pid, signal.SIGTERM)
 
     def _start():
-        init_db()
+        init_db(configuration)
         with daemon.DaemonContext(pidfile=PIDLockFile(PID_FILE), detach_process=True):
             WSGIServer(SERVER, port=configuration.server_port).start()
 
