@@ -26,6 +26,8 @@ class MockEntity(Resource):
     def post(self):
         """Create new entity"""
         data = self._body_parser.parse_args()
+        if not hasattr(data, "data"):
+            return "Data is missing", 400
         new_id = create_entity(data)
         return {}, 201, {"Location": f"/entity/{new_id}"}
 
