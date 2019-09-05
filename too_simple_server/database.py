@@ -1,6 +1,9 @@
 from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
+from psycopg2 import connect
+from psycopg2.errors import DuplicateDatabase, InFailedSqlTransaction
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from .configuration import Configuration, EntityStruct
 
@@ -20,10 +23,6 @@ class Entity(BaseModel):
 
 
 def _create_psql_database(db_name, user, password, host, port):
-    from psycopg2 import connect
-    from psycopg2.errors import DuplicateDatabase
-    from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
     conn = connect(dbname="postgres", user=user, password=password, host=host, port=port)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = conn.cursor()
@@ -54,6 +53,7 @@ def init_db(configuration: Configuration):
         database.commit()
 
 
+@DB.atomic()
 def create_entity(data: EntityStruct) -> str:
     """Create new entity returning uuid of created record"""
     new_uuid = str(uuid4())
