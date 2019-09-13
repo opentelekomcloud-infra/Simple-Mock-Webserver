@@ -9,8 +9,8 @@ import requests
 from ocomone.session import BaseUrlSession
 from wsgiserver import WSGIServer
 
-from too_simple_server.api import SERVER
-from too_simple_server.configuration import DEFAULT_CFG_PATH, EntityStruct, load_configuration
+from too_simple_server.api import API
+from too_simple_server.configuration import DEFAULT_CFG_PATH, load_configuration
 from too_simple_server.database import Entity, create_entity, init_db
 
 
@@ -28,8 +28,9 @@ def delete_entity(uuid):
 
 
 @pytest.fixture
-def entity(random_data):
-    uuid = create_entity(EntityStruct(random_data))
+def entity_uuid(random_data):
+    uuid = create_entity({"data": random_data})
+    print(f"Created entity with UUID {uuid}")
     yield uuid
     delete_entity(uuid)
 
@@ -40,7 +41,7 @@ def session() -> BaseUrlSession:
     config = load_configuration(DEFAULT_CFG_PATH)
     port = config.server_port
     init_db(config)
-    srv = Process(target=WSGIServer(SERVER, port=port).start, daemon=True)
+    srv = Process(target=WSGIServer(API, port=port).start, daemon=True)
     srv.start()
     session = BaseUrlSession(f"http://localhost:{port}")
     end_time = time.monotonic() + 10

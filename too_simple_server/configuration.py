@@ -1,17 +1,11 @@
 """Configuration consts"""
-import logging
 import os
+from dataclasses import asdict, dataclass
 from typing import NamedTuple, Optional
 
 import yaml
-from dataclasses import asdict, dataclass
-from ocomone.logging import setup_logger
 
 DEFAULT_CFG_PATH = "/etc/too-simple/config.yml"
-LOG_NAME = "too-simple.log"
-
-LOGGER = logging.getLogger(__name__)
-setup_logger(LOGGER, log_name=LOG_NAME, log_dir="/var/log/")
 
 
 @dataclass
@@ -41,7 +35,6 @@ def write_configuration(path=DEFAULT_CFG_PATH, **kwargs):
     config_data = DEFAULTS.to_dict()
     kwargs = {k: v for k, v in kwargs.items() if k in config_data}  # filter possible keys
     if not kwargs:
-        LOGGER.warning("No data to be written to configuration")
         return  # exit if there nothing to configure
     if os.path.exists(path):
         with open(path) as r_cfg_file:
@@ -65,4 +58,20 @@ def load_configuration(path: str = DEFAULT_CFG_PATH) -> Configuration:
 
 
 class EntityStruct(NamedTuple):
+    uuid: str
     data: str
+
+
+_IN_USER_DIR = os.path.expanduser("~/.too-simple")
+
+
+def _try_dir(default, fallback):
+    file_name = f"{default}/randomfilename"
+    try:
+        os.makedirs(default, exist_ok=True)
+        open(file_name, "w+").close()
+        os.remove(file_name)
+        return default
+    except (IOError, PermissionError):
+        os.makedirs(fallback, exist_ok=True)
+        return fallback
