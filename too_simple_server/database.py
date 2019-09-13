@@ -1,11 +1,12 @@
+from typing import List
 from uuid import uuid4
 
 from peewee import DatabaseProxy, Model, PostgresqlDatabase, SqliteDatabase, TextField, UUIDField
 from psycopg2 import connect
-from psycopg2.errors import DuplicateDatabase, InFailedSqlTransaction
+from psycopg2.errors import DuplicateDatabase
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-from .configuration import Configuration, EntityStruct
+from .configuration import Configuration, EntityStruct, _IN_USER_DIR, _try_dir
 
 DB = DatabaseProxy()
 
@@ -36,7 +37,8 @@ def _create_psql_database(db_name, user, password, host, port):
 
 def init_db(configuration: Configuration):
     if configuration.debug:
-        database = SqliteDatabase("debug.db")
+        local_dir = _try_dir("/opt/too-simple", _IN_USER_DIR)
+        database = SqliteDatabase(f"{local_dir}/debug.db")
     else:
 
         host, port = configuration.pg_db_url.split(":")
@@ -54,18 +56,18 @@ def init_db(configuration: Configuration):
 
 
 @DB.atomic()
-def create_entity(data: EntityStruct) -> str:
+def create_entity(data: dict) -> str:
     """Create new entity returning uuid of created record"""
     new_uuid = str(uuid4())
-    Entity.create(uuid=new_uuid, data=data.data)
+    Entity.create(uuid=new_uuid, data=data["data"])
     return new_uuid
 
 
 def get_entity_data(uuid: str) -> dict:
     entity: Entity = Entity.get(uuid=uuid)
-    return EntityStruct(data=entity.data)._asdict()
+    return EntityStruct(entity.uuid, entity.data)._asdict()
 
 
-def get_all_enities() -> dict:
+def get_all_entities() -> List[dict]:
     all_ent = Entity.select()
-    return {str(ent.uuid): EntityStruct(data=ent.data)._asdict() for ent in all_ent}
+    return [EntityStruct(uuid=str(ent.uuid), data=ent.data)._asdict() for ent in all_ent]

@@ -33,7 +33,7 @@ def _wait_for_server(ok):
     session.close()
 
 
-def _wait(condition, *args, timeout=5, error: Any = AssertionError):
+def _wait(condition, *args, timeout=10, error: Any = AssertionError):
     end_time = time.monotonic() + timeout
     while time.monotonic() < end_time:
         if condition(*args):

@@ -5,29 +5,17 @@ import signal
 from lockfile.pidlockfile import PIDLockFile
 from wsgiserver import WSGIServer
 
-from .api import SERVER
-from .configuration import DEFAULT_CFG_PATH, load_configuration
+from .api import API
+from .configuration import DEFAULT_CFG_PATH, _IN_USER_DIR, _try_dir, load_configuration
 from .database import init_db
 
 
-def _try_dir(default, fallback):
-    file_name = f"{default}/randomfilename"
-    try:
-        os.makedirs(default, exist_ok=True)
-        open(file_name, "w+").close()
-        os.remove(file_name)
-        return default
-    except (IOError, PermissionError):
-        os.makedirs(fallback, exist_ok=True)
-        return fallback
-
-
 def _pid_dir():
-    return _try_dir("/tmp/too-simple", os.path.expanduser("~/.too-simple"))
+    return _try_dir("/tmp/too-simple", _IN_USER_DIR)
 
 
 def _log_dir():
-    return _try_dir("/var/log/too-simple", os.path.expanduser("~/.too-simple"))
+    return _try_dir("/var/log/too-simple", _IN_USER_DIR)
 
 
 PID_FILE = os.path.abspath(f"{_pid_dir()}/web-server.pid")
@@ -54,9 +42,9 @@ def main(action, debug=None, configuration_path=DEFAULT_CFG_PATH, no_wsgi=False)
                                      detach_process=True,
                                      stdout=log_file, stderr=log_file):
             if no_wsgi:
-                SERVER.run("0.0.0.0", configuration.server_port)
+                API.run("0.0.0.0", configuration.server_port)
             else:
-                WSGIServer(SERVER, port=configuration.server_port).start()
+                WSGIServer(API, port=configuration.server_port).start()
 
     if action == "start":
         _start()
